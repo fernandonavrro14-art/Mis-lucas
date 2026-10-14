@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <title>Mis Lucas</title>
+  <meta name="description" content="Cuánto te queda para gastar hoy.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F2F2F7">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Mis Lucas">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="navbar" id="navbar">
+    <span class="navbar-title" id="navbar-title" aria-hidden="true"></span>
+  </header>
+
+  <div class="app">
+    <main>
+      <section class="view" id="view-hoy" aria-labelledby="hoy-titulo"></section>
+      <section class="view" id="view-mes" aria-labelledby="mes-titulo" hidden></section>
+      <section class="view" id="view-fijos" aria-labelledby="fijos-titulo" hidden></section>
+      <section class="view" id="view-metas" aria-labelledby="metas-titulo" hidden></section>
+      <section class="view" id="view-ajustes" aria-labelledby="ajustes-titulo" hidden></section>
+    </main>
+  </div>
+
+  <button class="add-fab" id="btn-add" type="button" data-action="nuevo-gasto">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    Agregar gasto
+  </button>
+
+  <nav class="tabbar" aria-label="Secciones">
+    <div class="tabbar-inner">
+      <a href="#hoy" data-tab="hoy">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+        Hoy
+      </a>
+      <a href="#mes" data-tab="mes">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>
+        Mes
+      </a>
+      <a href="#fijos" data-tab="fijos">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="6.5" r="1.6"/><circle cx="5.5" cy="12" r="1.6"/><circle cx="5.5" cy="17.5" r="1.6"/><path d="M10 6.5h10M10 12h10M10 17.5h10"/></svg>
+        Fijos
+      </a>
+      <a href="#metas" data-tab="metas">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8"/></svg>
+        Metas
+      </a>
+      <a href="#ajustes" data-tab="ajustes">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
+        Ajustes
+      </a>
+    </div>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <input type="file" id="file-import" accept="application/json,.json" hidden>
+
+  <!-- Hoja: nuevo / editar gasto -->
+  <dialog class="sheet" id="sheet-gasto" aria-labelledby="g-titulo">
+    <div class="sheet-panel">
+      <div class="sheet-grip" data-drag><span></span></div>
+      <header class="sheet-head" data-drag>
+        <h2 id="g-titulo">Nuevo gasto</h2>
+        <button class="close-btn" type="button" data-action="cerrar" aria-label="Cerrar" autofocus>
+          <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+        </button>
+      </header>
+      <div class="sheet-body">
+        <output class="amount" id="g-monto" aria-live="polite">$0</output>
+        <p class="amount-hint" id="g-hint"></p>
+        <div class="chips" id="g-cats" role="radiogroup" aria-label="Categoría"></div>
+        <input class="nota" id="g-nota" type="text" placeholder="Nota (opcional)" aria-label="Nota (opcional)" autocomplete="off" enterkeyhint="done" maxlength="80">
+        <div class="keypad" aria-label="Teclado numérico">
+          <button type="button" data-action="tecla" data-k="1">1</button>
+          <button type="button" data-action="tecla" data-k="2">2</button>
+          <button type="button" data-action="tecla" data-k="3">3</button>
+          <button type="button" data-action="tecla" data-k="4">4</button>
+          <button type="button" data-action="tecla" data-k="5">5</button>
+          <button type="button" data-action="tecla" data-k="6">6</button>
+          <button type="button" data-action="tecla" data-k="7">7</button>
+          <button type="button" data-action="tecla" data-k="8">8</button>
+          <button type="button" data-action="tecla" data-k="9">9</button>
+          <button type="button" data-action="tecla" data-k="000">000</button>
+          <button type="button" data-action="tecla" data-k="0">0</button>
+          <button type="button" data-action="tecla" data-k="back" aria-label="Borrar último dígito">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h11v14H9l-6-7z"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5"/></svg>
+          </button>
+        </div>
+        <details class="more" id="g-mas">
+          <summary>Imprevisto, fondo y fecha <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></summary>
+          <div class="more-body">
+            <label class="switch-row">
+              <span>
+                <span class="switch-title">Es un imprevisto</span>
+                <span class="switch-sub">Se paga desde Imprevistos, salvo que elijas otro.</span>
+              </span>
+              <input type="checkbox" id="g-imprevisto" class="switch">
+            </label>
+            <span class="field-label" id="g-fondo-label">Pagar con</span>
+            <div class="chips" id="g-fondos" role="radiogroup" aria-labelledby="g-fondo-label"></div>
+            <label>
+              <span class="field-label">Fecha</span>
+              <input class="date-input" type="date" id="g-fecha">
+            </label>
+          </div>
+        </details>
+      </div>
+      <footer class="sheet-foot">
+        <button class="btn btn-del" type="button" id="g-borrar" data-action="borrar-gasto" aria-label="Borrar gasto" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 12.5h9l1-12.5"/></svg>
+        </button>
+        <button class="btn btn-primary" type="button" data-action="guardar-gasto">Guardar</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <!-- Hoja: pedir un monto (fondos, ingresos, pagos) -->
+  <dialog class="sheet" id="sheet-monto" aria-labelledby="m-titulo">
+    <form class="sheet-panel" id="form-monto">
+      <div class="sheet-grip" data-drag><span></span></div>
+      <header class="sheet-head" data-drag>
+        <h2 id="m-titulo">Monto</h2>
+        <button class="close-btn" type="button" data-action="cerrar" aria-label="Cerrar">
+          <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+        </button>
+      </header>
+      <div class="sheet-body">
+        <p class="sheet-help" id="m-ayuda"></p>
+        <label class="money-field">
+          <span aria-hidden="true">$</span>
+          <input id="m-input" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" aria-label="Monto" placeholder="0" required autofocus>
+        </label>
+        <label class="field" id="m-nota-wrap">
+          <span class="field-label">Nota (opcional)</span>
+          <input class="nota" id="m-nota" type="text" autocomplete="off" maxlength="80" style="margin-top:0">
+        </label>
+      </div>
+      <footer class="sheet-foot">
+        <button class="btn btn-primary" type="submit" id="m-ok">Guardar</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

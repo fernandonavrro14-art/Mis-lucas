@@ -1,0 +1,6 @@
+# Configuración local del editor / Claude
+.claude/
+
+# Respaldos exportados: nunca subir datos personales
+mis-lucas-respaldo-*.json
+mis-lucas-gastos-*.csv
