@@ -20,13 +20,19 @@
 <body>
   <header class="navbar" id="navbar">
     <span class="navbar-title" id="navbar-title" aria-hidden="true"></span>
+    <span class="saved" id="guardado" role="status" aria-live="polite"></span>
   </header>
+
+  <div class="update-bar" id="update-bar" role="status" hidden>
+    <span>Hay una versión nueva de Mis Lucas</span>
+    <button class="toast-btn" type="button" data-action="actualizar">Actualizar</button>
+  </div>
 
   <div class="app">
     <main>
       <section class="view" id="view-hoy" aria-labelledby="hoy-titulo"></section>
       <section class="view" id="view-mes" aria-labelledby="mes-titulo" hidden></section>
-      <section class="view" id="view-fijos" aria-labelledby="fijos-titulo" hidden></section>
+      <section class="view" id="view-pagos" aria-labelledby="pagos-titulo" hidden></section>
       <section class="view" id="view-metas" aria-labelledby="metas-titulo" hidden></section>
       <section class="view" id="view-ajustes" aria-labelledby="ajustes-titulo" hidden></section>
     </main>
@@ -47,9 +53,9 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>
         Mes
       </a>
-      <a href="#fijos" data-tab="fijos">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="6.5" r="1.6"/><circle cx="5.5" cy="12" r="1.6"/><circle cx="5.5" cy="17.5" r="1.6"/><path d="M10 6.5h10M10 12h10M10 17.5h10"/></svg>
-        Fijos
+      <a href="#pagos" data-tab="pagos">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4M8.5 14.5l2 2 4-4"/></svg>
+        Pagos
       </a>
       <a href="#metas" data-tab="metas">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8"/></svg>
@@ -76,11 +82,13 @@
         </button>
       </header>
       <div class="sheet-body">
-        <output class="amount" id="g-monto" aria-live="polite">$0</output>
-        <p class="amount-hint" id="g-hint"></p>
-        <div class="chips" id="g-cats" role="radiogroup" aria-label="Categoría"></div>
+        <div class="amount-wrap" data-drag>
+          <output class="amount" id="g-monto" aria-live="polite">$0</output>
+          <p class="amount-hint" id="g-hint"></p>
+        </div>
+        <div class="cats" id="g-cats" role="radiogroup" aria-label="Categoría"></div>
         <input class="nota" id="g-nota" type="text" placeholder="Nota (opcional)" aria-label="Nota (opcional)" autocomplete="off" enterkeyhint="done" maxlength="80">
-        <div class="keypad" aria-label="Teclado numérico">
+        <div class="keypad" role="group" aria-label="Teclado numérico">
           <button type="button" data-action="tecla" data-k="1">1</button>
           <button type="button" data-action="tecla" data-k="2">2</button>
           <button type="button" data-action="tecla" data-k="3">3</button>
@@ -90,15 +98,35 @@
           <button type="button" data-action="tecla" data-k="7">7</button>
           <button type="button" data-action="tecla" data-k="8">8</button>
           <button type="button" data-action="tecla" data-k="9">9</button>
-          <button type="button" data-action="tecla" data-k="000">000</button>
+          <button type="button" data-action="tecla" data-k="000" aria-label="Tres ceros">000</button>
           <button type="button" data-action="tecla" data-k="0">0</button>
-          <button type="button" data-action="tecla" data-k="back" aria-label="Borrar último dígito">
+          <button type="button" data-action="tecla" data-k="back" aria-label="Borrar último dígito. Mantén apretado para borrar todo">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h11v14H9l-6-7z"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5"/></svg>
           </button>
         </div>
         <details class="more" id="g-mas">
-          <summary>Imprevisto, fondo y fecha <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></summary>
+          <summary>
+            <span>Fecha y más</span>
+            <span class="more-sum" id="g-mas-sum"></span>
+            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </summary>
           <div class="more-body">
+            <span class="field-label" id="g-fecha-label">Fecha</span>
+            <div class="chips" id="g-fechas" role="radiogroup" aria-labelledby="g-fecha-label">
+              <button class="chip" type="button" role="radio" data-action="fecha-gasto" data-fecha="hoy">Hoy</button>
+              <button class="chip" type="button" role="radio" data-action="fecha-gasto" data-fecha="ayer">Ayer</button>
+              <button class="chip" type="button" role="radio" data-action="fecha-gasto" data-fecha="otra">Otro día</button>
+            </div>
+            <label id="g-fecha-wrap" class="date-wrap" hidden>
+              <span class="visually-hidden">Elegir fecha</span>
+              <input class="date-input" type="date" id="g-fecha">
+            </label>
+
+            <div id="g-pagocon">
+              <span class="field-label" id="g-fondo-label">Se paga con</span>
+              <div class="chips" id="g-fondos" role="radiogroup" aria-labelledby="g-fondo-label"></div>
+            </div>
+
             <label class="switch-row">
               <span>
                 <span class="switch-title">Es un imprevisto</span>
@@ -106,11 +134,13 @@
               </span>
               <input type="checkbox" id="g-imprevisto" class="switch">
             </label>
-            <span class="field-label" id="g-fondo-label">Pagar con</span>
-            <div class="chips" id="g-fondos" role="radiogroup" aria-labelledby="g-fondo-label"></div>
-            <label>
-              <span class="field-label">Fecha</span>
-              <input class="date-input" type="date" id="g-fecha">
+
+            <label class="switch-row" id="g-atajo-row">
+              <span>
+                <span class="switch-title">Guardar como atajo</span>
+                <span class="switch-sub">La próxima vez lo anotas con un toque desde Hoy.</span>
+              </span>
+              <input type="checkbox" id="g-atajo" class="switch">
             </label>
           </div>
         </details>
@@ -149,6 +179,95 @@
         <button class="btn btn-primary" type="submit" id="m-ok">Guardar</button>
       </footer>
     </form>
+  </dialog>
+
+  <!-- Hoja: gasto de vez en cuando -->
+  <dialog class="sheet" id="sheet-pas" aria-labelledby="p-titulo">
+    <form class="sheet-panel" id="form-pas" novalidate>
+      <div class="sheet-grip" data-drag><span></span></div>
+      <header class="sheet-head" data-drag>
+        <h2 id="p-titulo">Nuevo gasto de vez en cuando</h2>
+        <button class="close-btn" type="button" data-action="cerrar" aria-label="Cerrar">
+          <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+        </button>
+      </header>
+      <div class="sheet-body">
+        <div id="p-plantillas">
+          <span class="field-label">Ideas rápidas</span>
+          <div class="chips" id="p-chips"></div>
+        </div>
+        <label class="field">
+          <span class="field-label">Qué es</span>
+          <input class="nota" id="p-nombre" type="text" maxlength="40" autocomplete="off" placeholder="Ej: Ropa, dentista" style="margin-top:0">
+        </label>
+        <label class="field">
+          <span class="field-label">Cuánto cuesta cada vez</span>
+          <span class="money-field small">
+            <span aria-hidden="true">$</span>
+            <input id="p-monto" type="text" inputmode="numeric" autocomplete="off" placeholder="0" aria-label="Monto">
+          </span>
+        </label>
+        <div class="field-pair">
+          <label class="field">
+            <span class="field-label">Cada cuánto</span>
+            <select class="select" id="p-cada">
+              <option value="1">Todos los meses</option>
+              <option value="2">Cada 2 meses</option>
+              <option value="3">Cada 3 meses</option>
+              <option value="4">Cada 4 meses</option>
+              <option value="6">Cada 6 meses</option>
+              <option value="12">Una vez al año</option>
+              <option value="24">Cada 2 años</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Próxima vez</span>
+            <input class="select" type="month" id="p-proxima">
+          </label>
+        </div>
+        <fieldset class="field opciones">
+          <legend class="field-label">Cómo apartar la plata</legend>
+          <label class="opcion">
+            <input type="radio" name="p-modo" value="juntar">
+            <span><strong>Juntar de a poco</strong><small>Aparta un poco cada mes hasta la próxima vez.</small></span>
+          </label>
+          <label class="opcion">
+            <input type="radio" name="p-modo" value="mes">
+            <span><strong>Todo el mes que toca</strong><small>No aparta nada antes; ese mes se descuenta completo.</small></span>
+          </label>
+        </fieldset>
+        <label class="field">
+          <span class="field-label">Categoría cuando lo pagues</span>
+          <select class="select" id="p-cat"></select>
+        </label>
+        <p class="calc" id="p-calc" aria-live="polite"></p>
+      </div>
+      <footer class="sheet-foot">
+        <button class="btn btn-del" type="button" id="p-borrar" data-action="borrar-pas-editando" aria-label="Quitar este gasto" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 12.5h9l1-12.5"/></svg>
+        </button>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Primer uso: configuración guiada -->
+  <dialog class="sheet sheet-full" id="sheet-bienvenida" aria-labelledby="b-titulo">
+    <div class="sheet-panel">
+      <header class="wiz-head">
+        <div>
+          <p class="wiz-paso" id="b-paso">Paso 1 de 4</p>
+          <h2 id="b-titulo" tabindex="-1" autofocus>Tu sueldo</h2>
+        </div>
+        <button class="text-btn" type="button" data-action="b-saltar">Saltar</button>
+      </header>
+      <div class="wiz-dots" id="b-dots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="sheet-body" id="b-body"></div>
+      <footer class="sheet-foot">
+        <button class="btn btn-gray" type="button" id="b-atras" data-action="b-atras">Atrás</button>
+        <button class="btn btn-primary" type="button" id="b-sig" data-action="b-sig">Siguiente</button>
+      </footer>
+    </div>
   </dialog>
 
   <script src="app.js" defer></script>

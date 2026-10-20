@@ -4,3 +4,10 @@
 # Respaldos exportados: nunca subir datos personales
 mis-lucas-respaldo-*.json
 mis-lucas-gastos-*.csv
+
+# Herramientas de prueba (solo desarrollo)
+node_modules/
+test-results/
+playwright-report/
+test-salida.txt
+capturas-v1.2/

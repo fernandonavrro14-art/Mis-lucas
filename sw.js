@@ -1,7 +1,7 @@
 /* Service worker de Mis Lucas: deja la app funcionando sin internet.
    Si agregas archivos nuevos a la app, súmalos a SHELL y sube VERSION. */
 
-const VERSION = 'v2';
+const VERSION = 'v1.2.0';
 const CACHE = `mislucas-${VERSION}`;
 
 const SHELL = [
@@ -17,8 +17,14 @@ const SHELL = [
   './icons/apple-touch-icon.png',
 ];
 
+// La versión nueva queda esperando hasta que toques "Actualizar" en la app
+// (o hasta que la cierres del todo). La primera instalación se activa sola.
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data === 'actualizar') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
