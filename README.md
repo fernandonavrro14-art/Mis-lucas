@@ -95,23 +95,4 @@ El navegador puede borrar datos locales si el teléfono se queda sin espacio. La
 
 ---
 
-# Al día (en `dia/`)
-
-Segunda app del mismo repo: un check-in diario por preguntas. Al final del día te pregunta, una por una, si hiciste cada actividad (entrenamiento, alimentación, descanso y las que agregues). Es independiente de Mis Lucas: tiene su propia dirección, sus propios datos (`localStorage`, clave `aldia:v1`) y se instala aparte.
-
-Vive en `https://fernandonavrro14-art.github.io/Mis-lucas/dia/` (en el computador: http://localhost:5173/dia/).
-
-- **Mi día:** las actividades de hoy por categoría. Tocar una cambia Sí ↔ No; las hechas se ven tachadas. Flechas para ir a otros días (los futuros se ven, pero no se responden). Abajo, un campo para agregar una tarea solo para ese día.
-- **Check-in:** una pregunta a la vez con Sí / No, nota opcional y resultado por categoría. En el computador también responde con las teclas S y N.
-- **Semana:** tabla con ✓, ✕, punto gris (sin responder) y totales por día y por categoría. Tocar un día lo abre en Mi día.
-- **Actividades:** crear, editar, pausar, borrar y ordenar actividades y categorías. Una actividad puede ser diaria, de ciertos días (con detalle distinto por día, como la rutina de entrenamiento) o de una sola fecha. Pausar y borrar rigen desde hoy: el historial no se pierde.
-- **Avance:** racha de días con el check-in completo, últimos 14 días, % de cumplimiento por categoría, descarga en CSV, respaldo JSON (descargar y restaurar) e instrucciones para instalar.
-
-| Archivo | Para qué |
-|---|---|
-| `dia/index.html`, `dia/styles.css`, `dia/app.js` | La app |
-| `dia/sw.js` | Su service worker (solo atiende `/dia/` y solo toca cachés `aldia-*`) |
-| `dia/manifest.json` + `dia/icons/` | Para instalarla aparte de Mis Lucas |
-| `tests/dia.spec.js` | Sus pruebas (corren con `npm test`) |
-
-Al publicar una versión nueva de Al día, sube `VERSION` en `dia/sw.js`. El `sw.js` de Mis Lucas no atiende nada dentro de `dia/`, así que las dos apps se actualizan cada una por su lado.
+**Al día** (el check-in diario) tiene su propio repositorio y dirección: https://fernandonavrro14-art.github.io/al-dia/. La carpeta `dia/` de este repo solo redirige ahí a quien tenga guardada la dirección antigua (`/Mis-lucas/dia/`). Las dos apps comparten el sitio github.io, por eso el `sw.js` de Mis Lucas solo borra cachés que empiezan con `mislucas-` y no atiende nada dentro de `dia/`.
