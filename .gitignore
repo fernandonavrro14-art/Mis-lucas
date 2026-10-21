@@ -4,6 +4,8 @@
 # Respaldos exportados: nunca subir datos personales
 mis-lucas-respaldo-*.json
 mis-lucas-gastos-*.csv
+al-dia-*.csv
+al-dia-respaldo-*.json
 
 # Herramientas de prueba (solo desarrollo)
 node_modules/

@@ -1,7 +1,9 @@
 /* Service worker de Mis Lucas: deja la app funcionando sin internet.
-   Si agregas archivos nuevos a la app, súmalos a SHELL y sube VERSION. */
+   Si agregas archivos nuevos a la app, súmalos a SHELL y sube VERSION.
+   Comparte el sitio con Al día (/dia/, con su propio service worker):
+   solo toca cachés que empiezan con "mislucas-" y no atiende lo que está en /dia/. */
 
-const VERSION = 'v1.2.0';
+const VERSION = 'v1.2.1';
 const CACHE = `mislucas-${VERSION}`;
 
 const SHELL = [
@@ -30,7 +32,7 @@ self.addEventListener('message', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('mislucas-') && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });
@@ -40,6 +42,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  if (req.url.startsWith(new URL('./dia/', self.registration.scope).href)) return;
 
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
